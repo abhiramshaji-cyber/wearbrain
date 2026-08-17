@@ -1,0 +1,26 @@
+{
+  "name": "wearbrain",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "db:migrate:local": "wrangler d1 migrations apply wearbrain --local",
+    "db:migrate": "wrangler d1 migrations apply wearbrain --remote"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "^1.2.18",
+    "ai": "^4.3.16",
+    "zod": "^3.24.2",
+    "workers-ai-provider": "^0.7.1"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.8.19",
+    "@cloudflare/workers-types": "^4.20250510.0",
+    "typescript": "^5.8.3",
+    "vitest": "~3.0.9",
+    "wrangler": "^4.123.0"
+  }
+}
