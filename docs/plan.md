@@ -1,7 +1,7 @@
 # wearbrain design
 
 Date: 2026-08-10
-Status: agreed, not yet broken into an implementation plan
+Status: agreed. The Worker half is built — see [worker.md](worker.md) for what shipped and what it decided along the way. The watch app is not started.
 
 ## Goal
 
@@ -40,7 +40,11 @@ The design compensates in four ways:
 1. **Three or four tools maximum.** Selection accuracy at this model size falls measurably with every tool added.
 2. **Structured output over freeform tool calls.** Use `generateObject` against a strict schema wherever possible. Far more reliable than open ended function calling on a small model.
 3. **Router plus deterministic workers.** The model classifies intent and extracts arguments. Plain TypeScript executes. You get agent behavior without trusting a 3B model to plan a sequence.
-4. **Escalation path.** When router confidence is low, that single call goes to Gemini Flash. A handful of paid calls a day costs almost nothing and prevents the brain from feeling stupid.
+4. **Escalation path.** When router confidence is low, that single call goes to Gemini 2.5 Flash-Lite. A handful of paid calls a day costs almost nothing and prevents the brain from feeling stupid.
+
+   Flash-Lite rather than Flash: as of August 2026 Flash is $1.50/$7.50 per million tokens, which is no longer the rounding error this design assumed. Flash-Lite is $0.10/$0.40 and the escalated call is a short classification over a one-line question, so the cheaper tier loses nothing. Both retain a free tier in AI Studio, so escalation costs nothing until it outgrows the rate limit.
+
+   Confidence is a boolean the router emits about its own routing, not a float compared against a tuned threshold. A threshold would be a magic number needing maintenance; asking the model whether the mapping clearly follows from the question is the same judgment without the knob.
 
 ## Architecture
 
@@ -100,10 +104,10 @@ Explicitly out of scope for v1: multi user support, calendar integration, a phon
 
 ## Open questions
 
-* Which specific Workers AI model for the router. Needs a bake off against real intent examples before committing.
-* Whether the daily reflection should be delivered as a watch notification or pulled on demand.
+* Which specific Workers AI model for the router. `@cf/meta/llama-3.1-8b-instruct` is the placeholder default, chosen to sit at the 8B line above. Still needs a bake off against real intent examples; `ROUTER_MODEL` overrides it without a code change.
+* Whether the daily reflection should be delivered as a watch notification or pulled on demand. Until this is settled, due reminders accumulate in D1 and the watch polls `GET /reminders/due`. Nothing pushes yet.
 * Retention policy. Entries are indefinite for now, which is fine at personal scale.
 
 ## Next step
 
-Turn this into an implementation plan, starting with the Worker (ingest plus agent) so the watch app has something real to talk to.
+The Worker is built and tested against local D1. Next is the watch app, which now has a real API to talk to. Before deploying the Worker, the three provisioning steps in the README have to run against a real Cloudflare account.
