@@ -81,3 +81,11 @@ wrangler deploy
 | `GET /health` | unauthenticated |
 
 The watch supplies `localDate` and `nowLocalISO` because the server never guesses a timezone — see the durability section of [docs/worker.md](docs/worker.md).
+
+## Contributing
+
+Issues and pull requests are welcome. The Worker is testable locally with no Cloudflare account, and the watch app is not started yet, so that is the most open area. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Licence
+
+MIT. See [LICENSE](LICENSE).
